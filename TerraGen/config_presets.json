@@ -1,0 +1,38 @@
+{
+    "default": {
+        "grid_width": 100,
+        "grid_height": 100,
+        "scale": 20.0,
+        "water_level": 0.4,
+        "octaves": 6,
+        "persistence": 0.5,
+        "lacunarity": 2.0
+    },
+    "desert": {
+        "grid_width": 150,
+        "grid_height": 150,
+        "scale": 30.0,
+        "water_level": 0.1,
+        "octaves": 4,
+        "persistence": 0.3,
+        "lacunarity": 2.5
+    },
+    "forest": {
+        "grid_width": 100,
+        "grid_height": 100,
+        "scale": 15.0,
+        "water_level": 0.4,
+        "octaves": 6,
+        "persistence": 0.5,
+        "lacunarity": 2.0
+    },
+    "ocean": {
+        "grid_width": 200,
+        "grid_height": 200,
+        "scale": 50.0,
+        "water_level": 0.6,
+        "octaves": 5,
+        "persistence": 0.4,
+        "lacunarity": 1.8
+    }
+}
