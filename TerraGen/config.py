@@ -1,4 +1,3 @@
-# config.py
 import json
 
 class Config:
@@ -12,6 +11,7 @@ class Config:
         self.octaves = 6
         self.persistence = 0.5
         self.lacunarity = 2.0
+        self.terrain_type = "default"  # Default terrain type
         self.load_preset(preset)
 
     def load_preset(self, preset):

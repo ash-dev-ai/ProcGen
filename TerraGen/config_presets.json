@@ -6,7 +6,35 @@
         "water_level": 0.4,
         "octaves": 6,
         "persistence": 0.5,
-        "lacunarity": 2.0
+        "lacunarity": 2.0,
+        "terrain_type": "default",
+        "initial_temperature": 25.0,
+        "initial_vegetation": 0.5,
+        "update_frequency": 1,
+        "interaction_factors": {
+            "erosion_rate": 0.1,
+            "vegetation_growth": 0.2,
+            "desertification_rate": 0.05
+        },
+        "weather_impact": {
+            "rain_absorption": 0.4,
+            "snow_accumulation": 0.15,
+            "wind_sensitivity": 0.1
+        },
+        "seasonal_effects": {
+            "spring": {
+                "vegetation_growth_multiplier": 1.2
+            },
+            "summer": {
+                "desertification_rate_multiplier": 1.1
+            },
+            "autumn": {
+                "vegetation_growth_multiplier": 0.7
+            },
+            "winter": {
+                "snow_accumulation_multiplier": 1.2
+            }
+        }
     },
     "desert": {
         "grid_width": 150,
@@ -15,7 +43,35 @@
         "water_level": 0.1,
         "octaves": 4,
         "persistence": 0.3,
-        "lacunarity": 2.5
+        "lacunarity": 2.5,
+        "terrain_type": "desert",
+        "initial_temperature": 40.0,
+        "initial_vegetation": 0.1,
+        "update_frequency": 1,
+        "interaction_factors": {
+            "erosion_rate": 0.05,
+            "vegetation_growth": 0.1,
+            "desertification_rate": 0.3
+        },
+        "weather_impact": {
+            "rain_absorption": 0.1,
+            "snow_accumulation": 0.0,
+            "wind_sensitivity": 0.3
+        },
+        "seasonal_effects": {
+            "spring": {
+                "vegetation_growth_multiplier": 0.4
+            },
+            "summer": {
+                "desertification_rate_multiplier": 1.8
+            },
+            "autumn": {
+                "vegetation_growth_multiplier": 0.2
+            },
+            "winter": {
+                "snow_accumulation_multiplier": 0.0
+            }
+        }
     },
     "forest": {
         "grid_width": 100,
@@ -24,7 +80,35 @@
         "water_level": 0.4,
         "octaves": 6,
         "persistence": 0.5,
-        "lacunarity": 2.0
+        "lacunarity": 2.0,
+        "terrain_type": "forest",
+        "initial_temperature": 25.0,
+        "initial_vegetation": 0.8,
+        "update_frequency": 1,
+        "interaction_factors": {
+            "erosion_rate": 0.1,
+            "vegetation_growth": 0.5,
+            "desertification_rate": 0.02
+        },
+        "weather_impact": {
+            "rain_absorption": 0.6,
+            "snow_accumulation": 0.2,
+            "wind_sensitivity": 0.2
+        },
+        "seasonal_effects": {
+            "spring": {
+                "vegetation_growth_multiplier": 1.5
+            },
+            "summer": {
+                "desertification_rate_multiplier": 0.4
+            },
+            "autumn": {
+                "vegetation_growth_multiplier": 0.9
+            },
+            "winter": {
+                "snow_accumulation_multiplier": 1.1
+            }
+        }
     },
     "ocean": {
         "grid_width": 200,
@@ -33,7 +117,27 @@
         "water_level": 0.6,
         "octaves": 5,
         "persistence": 0.4,
-        "lacunarity": 1.8
+        "lacunarity": 1.8,
+        "terrain_type": "ocean",
+        "initial_temperature": 15.0,
+        "initial_vegetation": 0.0,
+        "update_frequency": 1,
+        "interaction_factors": {
+            "erosion_rate": 0.0,
+            "vegetation_growth": 0.0,
+            "desertification_rate": 0.0
+        },
+        "weather_impact": {
+            "rain_absorption": 0.8,
+            "snow_accumulation": 0.0,
+            "wind_sensitivity": 0.05
+        },
+        "seasonal_effects": {
+            "spring": {},
+            "summer": {},
+            "autumn": {},
+            "winter": {}
+        }
     },
     "mountains": {
         "grid_width": 120,
@@ -42,16 +146,72 @@
         "water_level": 0.2,
         "octaves": 8,
         "persistence": 0.8,
-        "lacunarity": 2.3
+        "lacunarity": 2.3,
+        "terrain_type": "mountains",
+        "initial_temperature": 10.0,
+        "initial_vegetation": 0.4,
+        "update_frequency": 1,
+        "interaction_factors": {
+            "erosion_rate": 0.2,
+            "vegetation_growth": 0.1,
+            "desertification_rate": 0.0
+        },
+        "weather_impact": {
+            "rain_absorption": 0.3,
+            "snow_accumulation": 0.5,
+            "wind_sensitivity": 0.2
+        },
+        "seasonal_effects": {
+            "spring": {
+                "vegetation_growth_multiplier": 0.6
+            },
+            "summer": {
+                "desertification_rate_multiplier": 0.0
+            },
+            "autumn": {
+                "vegetation_growth_multiplier": 0.5
+            },
+            "winter": {
+                "snow_accumulation_multiplier": 1.5
+            }
+        }
     },
     "plains": {
         "grid_width": 150,
         "grid_height": 150,
         "scale": 40.0,
-        "water_level": 0.5,
+        "water_level": 0.2,
         "octaves": 4,
         "persistence": 0.6,
-        "lacunarity": 1.8
+        "lacunarity": 1.8,
+        "terrain_type": "plains",
+        "initial_temperature": 20.0,
+        "initial_vegetation": 0.6,
+        "update_frequency": 1,
+        "interaction_factors": {
+            "erosion_rate": 0.05,
+            "vegetation_growth": 0.3,
+            "desertification_rate": 0.1
+        },
+        "weather_impact": {
+            "rain_absorption": 0.3,
+            "snow_accumulation": 0.02,
+            "wind_sensitivity": 0.1
+        },
+        "seasonal_effects": {
+            "spring": {
+                "vegetation_growth_multiplier": 1.2
+            },
+            "summer": {
+                "desertification_rate_multiplier": 1.0
+            },
+            "autumn": {
+                "vegetation_growth_multiplier": 0.8
+            },
+            "winter": {
+                "snow_accumulation_multiplier": 0.8
+            }
+        }
     },
     "arctic": {
         "grid_width": 100,
@@ -60,6 +220,34 @@
         "water_level": 0.7,
         "octaves": 5,
         "persistence": 0.4,
-        "lacunarity": 1.9
+        "lacunarity": 1.9,
+        "terrain_type": "arctic",
+        "initial_temperature": -10.0,
+        "initial_vegetation": 0.1,
+        "update_frequency": 1,
+        "interaction_factors": {
+            "erosion_rate": 0.1,
+            "vegetation_growth": 0.0,
+            "desertification_rate": 0.0
+        },
+        "weather_impact": {
+            "rain_absorption": 0.1,
+            "snow_accumulation": 0.5,
+            "wind_sensitivity": 0.15
+        },
+        "seasonal_effects": {
+            "spring": {
+                "vegetation_growth_multiplier": 0.0
+            },
+            "summer": {
+                "desertification_rate_multiplier": 0.0
+            },
+            "autumn": {
+                "vegetation_growth_multiplier": 0.0
+            },
+            "winter": {
+                "snow_accumulation_multiplier": 1.5
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.patches import RegularPolygon
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.colors import LightSource
 
@@ -8,13 +9,60 @@ class Visualization:
     def __init__(self, terrain):
         self.terrain = terrain
 
+    def plot_hex_grid(self):
+        """
+        Plot the hexagonal grid with colored terrain regions.
+        """
+        if self.terrain.grid:
+            fig, ax = plt.subplots(figsize=(12, 10))
+            for (q, r), cell in self.terrain.grid.items():
+                x, y = self.hex_to_cartesian(q, r)
+                color = self.get_color_for_terrain(cell.terrain_type)
+
+                # Draw hexagonal cells
+                hexagon = RegularPolygon(
+                    (x, y),
+                    numVertices=6,
+                    radius=0.5,
+                    orientation=np.radians(30),
+                    facecolor=color,
+                    edgecolor='black',
+                )
+                ax.add_patch(hexagon)
+
+            ax.set_xlim(-self.terrain.config.grid_width, self.terrain.config.grid_width)
+            ax.set_ylim(-self.terrain.config.grid_width, self.terrain.config.grid_width)
+            ax.set_aspect('equal')
+            plt.title("Hexagonal Terrain Visualization", fontsize=16)
+            plt.xlabel("X-axis")
+            plt.ylabel("Y-axis")
+            plt.grid(False)
+            plt.show()
+
+    def get_color_for_terrain(self, terrain_type):
+        """
+        Get color for the given terrain type.
+        :param terrain_type: Type of terrain (e.g., desert, forest).
+        :return: Color for the terrain.
+        """
+        color_map = {
+            "desert": "#E3C16F",
+            "forest": "#228B22",
+            "mountains": "#8B8B83",
+            "plains": "#ADDF84",
+            "arctic": "#B3E5FC",
+            "ocean": "#1E88E5",
+        }
+        return color_map.get(terrain_type, "#FFFFFF")
+
     def plot_grayscale(self):
         """
-        Plot the heightmap in grayscale with enhanced resolution.
+        Plot the heightmap in grayscale.
         """
-        if self.terrain.heightmap is not None:
+        if self.terrain.grid:
+            heightmap = self.get_heightmap()
             plt.figure(figsize=(12, 10), dpi=150)
-            plt.imshow(self.terrain.heightmap, cmap='gray', interpolation='bilinear')
+            plt.imshow(heightmap, cmap='gray', interpolation='nearest', aspect='equal')
             plt.colorbar(label="Height")
             plt.title("Grayscale Heightmap", fontsize=16)
             plt.xlabel("X-axis")
@@ -24,52 +72,56 @@ class Visualization:
 
     def plot_colored(self):
         """
-        Create a complex 2D colored visualization with smooth gradients.
+        Create a complex 2D colored visualization with regional distinctions.
         """
-        if self.terrain.heightmap is not None:
-            heightmap = self.terrain.heightmap
-            water_level = self.terrain.config.water_level
-
-            # Custom gradient map with smooth transitions
+        if self.terrain.grid:
+            heightmap = self.get_heightmap()
             gradient_map = np.zeros((*heightmap.shape, 3))
-            for i in range(heightmap.shape[0]):
-                for j in range(heightmap.shape[1]):
-                    height = heightmap[i, j]
-                    if height <= water_level:  # Water (blue shades)
-                        gradient_map[i, j] = [0.2, 0.4, 0.8 + 0.2 * (height / water_level)]
-                    elif height <= 0.6:  # Sand (yellow to brown)
-                        gradient_map[i, j] = [0.9, 0.8 - 0.2 * (height / 0.6), 0.4]
-                    else:  # Forested or high terrain (green to dark green)
-                        gradient_map[i, j] = [0.1 + 0.2 * height, 0.8 - 0.3 * height, 0.2]
+            for (q, r), cell in self.terrain.grid.items():
+                x, y = self.hex_to_cartesian(q, r)
+                gradient_map[int(y) % gradient_map.shape[0]][int(x) % gradient_map.shape[1]] = self.get_rgb_for_terrain(cell.terrain_type)
 
-            # Render the gradient map
             plt.figure(figsize=(12, 10), dpi=150)
-            plt.imshow(gradient_map, interpolation='bilinear')
-            plt.title("Enhanced Colored Terrain", fontsize=16)
+            plt.imshow(gradient_map, interpolation='nearest', aspect='equal')
+            plt.title("Regional Colored Terrain", fontsize=16)
             plt.xlabel("X-axis")
             plt.ylabel("Y-axis")
-            plt.axis('off')  # No gridlines or ticks for a cleaner look
+            plt.axis('off')
             plt.show()
+
+    def get_rgb_for_terrain(self, terrain_type):
+        """
+        Get RGB color for the given terrain type.
+        :param terrain_type: Type of terrain (e.g., desert, forest).
+        :return: RGB tuple for the terrain.
+        """
+        color_map = {
+            "desert": [227/255, 193/255, 111/255],
+            "forest": [34/255, 139/255, 34/255],
+            "mountains": [139/255, 139/255, 131/255],
+            "plains": [173/255, 223/255, 132/255],
+            "arctic": [179/255, 229/255, 252/255],
+            "ocean": [30/255, 136/255, 229/255],
+        }
+        return color_map.get(terrain_type, [1.0, 1.0, 1.0])
 
     def plot_3d_surface(self):
         """
         Render a complex 3D surface with lighting and shadows.
         """
-        if self.terrain.heightmap is not None:
-            heightmap = self.terrain.heightmap
+        if self.terrain.grid:
+            heightmap = self.get_heightmap()
             x = np.linspace(0, heightmap.shape[1], heightmap.shape[1])
             y = np.linspace(0, heightmap.shape[0], heightmap.shape[0])
             x, y = np.meshgrid(x, y)
-    
+
             fig = plt.figure(figsize=(14, 10), dpi=150)
             ax = fig.add_subplot(111, projection='3d')
-    
-            # Fix: Use a colormap object
-            from matplotlib import cm
-            cmap = cm.get_cmap('terrain')  # Retrieve the colormap object
+
+            cmap = plt.get_cmap('terrain')  # Colormap for terrain
             ls = LightSource(azdeg=315, altdeg=45)
-            rgb = ls.shade(heightmap, cmap=cmap, vert_exag=1.5, blend_mode='soft')
-    
+            rgb = ls.shade(heightmap, cmap=cmap, vert_exag=2.0, blend_mode='soft')
+
             ax.plot_surface(x, y, heightmap, rstride=1, cstride=1, facecolors=rgb, antialiased=True, shade=False)
             ax.set_title("3D Terrain Surface with Shadows", fontsize=16)
             ax.set_xlabel("X-axis")
@@ -77,18 +129,72 @@ class Visualization:
             ax.set_zlabel("Height")
             plt.show()
 
-    def plot_elevation_with_contours(self):
+    def get_heightmap(self):
         """
-        Create a complex 2D visualization with elevation shading and contour lines.
+        Extract the heightmap from the grid.
+        :return: 2D numpy array of heights.
         """
-        if self.terrain.heightmap is not None:
-            heightmap = self.terrain.heightmap
+        grid_width = self.terrain.config.grid_width
+        heightmap = np.zeros((grid_width, grid_width))
+        for (q, r), cell in self.terrain.grid.items():
+            x, y = self.hex_to_cartesian(q, r)
+            heightmap[int(y) % grid_width][int(x) % grid_width] = cell.height
+        return heightmap
 
-            fig, ax = plt.subplots(figsize=(12, 10), dpi=150)
-            ax.imshow(heightmap, cmap='terrain', interpolation='bilinear')
-            ax.contour(heightmap, levels=10, colors='black', linewidths=0.5)
-            ax.set_title("Elevation Map with Contour Lines", fontsize=16)
-            ax.set_xlabel("X-axis")
-            ax.set_ylabel("Y-axis")
-            plt.colorbar(plt.cm.ScalarMappable(cmap='terrain'), ax=ax, label="Height")
+    def hex_to_cartesian(self, q, r):
+        """
+        Convert hexagonal coordinates to Cartesian coordinates for visualization.
+        :param q: Axial q-coordinate.
+        :param r: Axial r-coordinate.
+        :return: Tuple of Cartesian x, y coordinates.
+        """
+        x = 3 / 2 * q
+        y = np.sqrt(3) * (r + q / 2)
+        return x, y
+
+    def plot_weather_overlay(self, weather):
+        """
+        Plot the terrain with a weather overlay.
+        :param weather: A dictionary containing weather information (e.g., rain, snow).
+        """
+        if self.terrain.grid:
+            heightmap = self.get_heightmap()
+            plt.figure(figsize=(12, 10), dpi=150)
+            plt.imshow(heightmap, cmap='terrain', interpolation='nearest', aspect='equal')
+
+            # Add weather overlays
+            if weather.get("rain_intensity", 0) > 0.5:
+                plt.imshow(np.random.random(heightmap.shape), cmap="Blues", alpha=0.3)
+                plt.title("Rain Overlay", fontsize=16)
+
+            if weather.get("snow_intensity", 0) > 0.5:
+                plt.imshow(np.random.random(heightmap.shape), cmap="cool", alpha=0.3)
+                plt.title("Snow Overlay", fontsize=16)
+
+            plt.xlabel("X-axis")
+            plt.ylabel("Y-axis")
+            plt.colorbar(label="Height")
+            plt.show()
+
+    def plot_event_effects(self, event_type):
+        """
+        Plot the terrain with visual markers for an event's effects.
+        :param event_type: The type of event (e.g., "earthquake", "flood").
+        """
+        if self.terrain.grid:
+            heightmap = self.get_heightmap()
+            plt.figure(figsize=(12, 10), dpi=150)
+            plt.imshow(heightmap, cmap='terrain', interpolation='nearest', aspect='equal')
+            plt.title(f"Event Effect: {event_type.capitalize()}", fontsize=16)
+
+            if event_type == "earthquake":
+                plt.imshow(np.random.random(heightmap.shape), cmap="Reds", alpha=0.3)
+            elif event_type == "flood":
+                plt.imshow(np.random.random(heightmap.shape), cmap="Blues", alpha=0.3)
+            elif event_type == "wildfire":
+                plt.imshow(np.random.random(heightmap.shape), cmap="Oranges", alpha=0.3)
+
+            plt.xlabel("X-axis")
+            plt.ylabel("Y-axis")
+            plt.colorbar(label="Height")
             plt.show()
