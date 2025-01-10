@@ -1,10 +1,14 @@
-# terrain.py
 import numpy as np
 from noise import pnoise2
 from scipy.ndimage import zoom
 
+
 class Terrain:
     def __init__(self, config):
+        """
+        Initialize the Terrain object.
+        :param config: A Config object containing parameters for terrain generation.
+        """
         self.config = config
         self.heightmap = None
 
@@ -29,8 +33,11 @@ class Terrain:
         for i in range(width):
             for j in range(height):
                 self.heightmap[i][j] = pnoise2(
-                    (i + seed) / scale, (j + seed) / scale,
-                    octaves=octaves, persistence=persistence, lacunarity=lacunarity
+                    (i + seed) / scale,
+                    (j + seed) / scale,
+                    octaves=octaves,
+                    persistence=persistence,
+                    lacunarity=lacunarity,
                 )
 
     def add_random_variation(self, intensity=0.05):
@@ -50,7 +57,8 @@ class Terrain:
         if self.heightmap is not None:
             min_val = np.min(self.heightmap)
             max_val = np.max(self.heightmap)
-            self.heightmap = (self.heightmap - min_val) / (max_val - min_val)
+            if max_val > min_val:  # Avoid division by zero
+                self.heightmap = (self.heightmap - min_val) / (max_val - min_val)
 
     def apply_water(self):
         """
@@ -96,5 +104,11 @@ class Terrain:
             temp_terrain.normalize()
             resized_heightmap = self.resize_heightmap(temp_terrain.heightmap, target_shape)
             combined_heightmap += resized_heightmap * weight
+
+        # Normalize the combined heightmap after blending
+        min_val = np.min(combined_heightmap)
+        max_val = np.max(combined_heightmap)
+        if max_val > min_val:  # Avoid division by zero
+            combined_heightmap = (combined_heightmap - min_val) / (max_val - min_val)
 
         self.heightmap = combined_heightmap
